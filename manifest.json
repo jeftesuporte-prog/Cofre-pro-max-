@@ -38,5 +38,25 @@
       "form_factor": "narrow",
       "label": "Tela de senha do Cofre Pro"
     }
-  ]
+  ],
+  "file_handlers": [
+    {
+      "action": "./",
+      "accept": {
+        "text/plain": [".txt"]
+      }
+    }
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+cofre",
+      "url": "./?link=%s"
+    }
+  ],
+  "related_applications": [],
+  "widgets": [],
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "scope_extensions": []
 }
