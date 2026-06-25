@@ -7,7 +7,7 @@
 
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#00E5FF">
+  <meta name="theme-color" content="#000000">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -36,15 +36,14 @@
     #imgZoom { transform-origin: center center; transition: transform 0.1s; }
     #galeria img { touch-action: manipulation; }
   </style>
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js', {scope: './'})
-        .then(reg => console.log('SW registrado:', reg.scope))
-        .catch(err => console.error('SW falhou:', err));
-    });
-  }
-</script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js');
+      });
+    }
+  </script>
 
 </head>
 <body class="text-white">
