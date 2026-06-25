@@ -1,0 +1,1385 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cofre Pro Max - Firebase</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#000000">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Cofre Pro">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html { font-size: 17px; }
+    :root {
+      --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+      --glass: rgba(30, 41, 59, 0.7);
+      --border: rgba(255, 255, 255, 0.1);
+    }
+    body { background: var(--bg-gradient); min-height: 100vh; }
+ .glass { background: var(--glass); backdrop-filter: blur(10px); border: 1px solid var(--border); }
+ .forca-fraca { background: #ef4444; }
+ .forca-media { background: #f59e0b; }
+ .forca-forte { background: #22c55e; }
+ .sidebar { transform: translateX(100%); transition: transform 0.3s ease; }
+ .sidebar.open { transform: translateX(0); }
+ .modal { animation: fadeIn 0.2s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+ .cat-btn { padding: 0.5rem 1rem!important; font-size: 0.875rem!important; }
+    /* CSS do Zoom da Galeria */
+    #modalZoom { touch-action: none; }
+    #imgZoom { transform-origin: center center; transition: transform 0.1s; }
+    #galeria img { touch-action: manipulation; }
+  </style>
+</head>
+<body class="text-white">
+    <!-- Modal de Confirmação -->
+    <div id="modalConfirm" class="hidden fixed inset-0 z-[999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="modal glass p-6 rounded-2xl w-full max-w-xs shadow-2xl">
+            <div class="text-center mb-4">
+                <div class="text-4xl mb-2" id="modalIcon"></div>
+                <h2 class="text-xl font-bold" id="modalTitle">Confirmar</h2>
+                <p class="text-slate-400 text-sm mt-2" id="modalText">Tem certeza?</p>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="fecharModal()" class="bg-slate-700 hover:bg-slate-600 p-3 rounded-lg font-bold transition">Cancelar</button>
+                <button id="modalBtnConfirm" class="bg-blue-600 hover:bg-blue-700 p-3 rounded-lg font-bold transition">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TEU APP COMPLETO VEM AQUI -->
+    <div id="app">
+      <!-- Coloca todo resto do teu código aqui -->
+    </div>
+
+    <!-- Modal Editar Nome -->
+    <div id="modalEditarNome" class="hidden fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="modal glass p-6 rounded-2xl w-full max-w-sm shadow-2xl">
+            <div class="text-center mb-4">
+                <div class="text-4xl mb-2"></div>
+                <h2 class="text-xl font-bold">Editar Nome</h2>
+                <p class="text-slate-400 text-sm mt-2">Confirme sua senha pra alterar</p>
+            </div>
+            <input id="senhaAtualNome" type="password" placeholder="Senha atual" class="w-full p-3 mb-3 rounded-lg bg-slate-800/50 border border-slate-700 focus:border-blue-500 focus:outline-none">
+            <input id="novoNome" type="text" placeholder="Novo nome" class="w-full p-3 mb-4 rounded-lg bg-slate-800/50 border border-slate-700 focus:border-blue-500 focus:outline-none">
+            <p id="msgEditarNome" class="text-red-400 text-sm mb-3 text-center"></p>
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="fecharModalNome()" class="bg-slate-700 hover:bg-slate-600 p-3 rounded-lg font-bold transition">Cancelar</button>
+                <button onclick="salvarNovoNome()" class="bg-blue-600 hover:bg-blue-700 p-3 rounded-lg font-bold transition">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tela de Login -->
+<div id="telaLogin" class="min-h-screen flex items-center justify-center p-4">
+    <div class="glass p-8 rounded-2xl w-full max-w-sm shadow-2xl">
+        <div class="text-center mb-6">
+            <div class="text-5xl mb-3"></div>
+            <h1 class="text-3xl font-bold">Cofre Pro Max</h1>
+            <p class="text-slate-400 text-sm mt-1">Firebase Edition</p>
+        </div>
+        
+        <div id="formLogin">
+            <input id="emailLogin" type="email" placeholder="Seu email" class="w-full p-3 mb-3 rounded-lg bg-slate-800/50 border border-slate-700 focus:border-blue-500 focus:outline-none">
+            <input id="senhaLogin" type="password" placeholder="Sua senha" class="w-full p-3 mb-2 rounded-lg bg-slate-800/50 border border-slate-700 focus:border-blue-500 focus:outline-none">
+            <button onclick="recuperarSenha()" class="w-full text-blue-400 hover:text-blue-300 text-sm mb-4 text-right">Esqueci minha senha</button>
+            <button onclick="mostrarCadastro()" class="w-full bg-green-600 hover:bg-green-700 p-3 rounded-lg font-bold transition mb-2">Criar Conta</button>
+            <button onclick="entrar()" class="w-full bg-blue-600 hover:bg-blue-700 p-3 rounded-lg font-bold transition">Entrar</button>
+        </div>
+
+        <div id="formCadastro" class="hidden">
+            <input id="nomeCadastro" type="text" placeholder="Seu nome" class="w-full p-3 mb-3 rounded-lg bg-slate-800/50 border border-slate-700 focus:border-blue-500 focus:outline-none">
+            <input id="emailCadastro" type="email" placeholder="Seu email" class="w-full p-3 mb-3 rounded-lg bg-slate-800/50 border border-slate-700 focus:border-blue-500 focus:outline-none">
+            <div class="relative mb-2">
+                <input id="senhaCadastro" type="password" onkeyup="medirForcaCadastro()" placeholder="Crie uma senha forte" class="w-full p-3 rounded-lg bg-slate-800/50 border border-slate-700 focus:border-blue-500 focus:outline-none pr-10">
+                <button onclick="mostrarSenhaCadastro()" class="absolute right-3 top-3.5 text-slate-400 hover:text-white"></button>
+            </div>
+            <div class="h-1 rounded-full bg-slate-700 mb-3"><div id="forcaBarCadastro" class="h-full rounded-full transition-all" style="width:0%"></div></div>
+            <p class="text-xs text-slate-400 mb-3">Use 8+ caracteres, maiúsculas, números e símbolos</p>
+            <button onclick="criarConta()" class="w-full bg-green-600 hover:bg-green-700 p-3 rounded-lg font-bold transition mb-2">Cadastrar</button>
+            <button onclick="voltarLogin()" class="w-full bg-slate-700 hover:bg-slate-600 p-3 rounded-lg font-bold transition">Voltar</button>
+        </div>
+        
+        <p id="msgLogin" class="text-red-400 text-sm mt-3 text-center"></p>
+    </div>
+</div>
+
+    <!-- Tela de Bloqueio -->
+    <div id="telaBloqueio" class="hidden min-h-screen flex items-center justify-center p-4 fixed inset-0 z-50 bg-slate-900/95 backdrop-blur-md">
+        <div class="glass p-8 rounded-2xl w-full max-w-sm shadow-2xl text-center">
+            <div class="text-5xl mb-4"></div>
+            <h1 class="text-2xl font-bold mb-2">Olá, <span id="nomeUsuarioBloq"></span></h1>
+            <p class="text-slate-400 text-sm mb-6">Insira sua senha para continuar</p>
+            <input id="senhaDesbloqueio" type="password" placeholder="Sua senha" class="w-full p-3 mb-4 rounded-lg bg-slate-800/50 border border-slate-700 focus:border-blue-500 focus:outline-none text-center">
+            <button onclick="desbloquear()" class="w-full bg-blue-600 hover:bg-blue-700 p-3 rounded-lg font-bold transition mb-2">Desbloquear</button>
+            <button onclick="sair()" class="text-sm text-slate-400 hover:text-white">Sair da conta</button>
+            <p id="msgBloqueio" class="text-red-400 text-sm mt-3"></p>
+        </div>
+    </div>
+
+    <!-- Menu Lateral -->
+    <div id="overlay" onclick="fecharSidebar()" class="hidden fixed inset-0 bg-black/50 z-40"></div>
+    <div id="sidebar" class="sidebar fixed top-0 right-0 h-full w-72 glass z-50 shadow-2xl">
+        <div class="p-5">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold flex items-center gap-2"> Config</h2>
+                <button onclick="fecharSidebar()" class="text-2xl hover:text-slate-400">×</button>
+            </div>
+            <div class="space-y-3">
+                <div class="text-xs text-slate-400 font-semibold uppercase">Conta</div>
+                <div class="text-sm text-slate-300 break-all p-3 bg-slate-800/50 rounded-lg" id="userEmailSide"></div>
+                <button onclick="abrirModalNome()" class="w-full bg-blue-700/50 hover:bg-blue-600 p-3 rounded-lg text-left flex items-center gap-3 transition">
+                    <span class="text-xl"></span>
+                    <span>Editar Nome</span>
+                </button>
+                <button onclick="abrirGaleria()" class="w-full bg-pink-700/50 hover:bg-pink-600 p-3 rounded-lg text-left flex items-center gap-3 transition">
+                    <span class="text-xl"></span>
+                    <span>Galeria</span>
+                </button>
+                <button onclick="abrirLixeira()" class="w-full bg-orange-700/50 hover:bg-orange-600 p-3 rounded-lg text-left flex items-center gap-3 transition">
+                    <span class="text-xl"></span>
+                    <span>Lixeira</span>
+                </button>
+                <button onclick="sair()" class="w-full bg-red-700/50 hover:bg-red-600 p-3 rounded-lg text-left flex items-center gap-3 transition">
+                    <span class="text-xl"></span>
+                    <span>Sair da Conta</span>
+                </button>
+                <div class="text-xs text-slate-400 font-semibold uppercase mt-4">App</div>
+                <button onclick="instalarPWA()" class="w-full bg-purple-700/50 hover:bg-purple-600 p-3 rounded-lg text-left flex items-center gap-3 transition">
+                    <span class="text-xl"></span>
+                    <span>Instalar no Celular</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tela da Galeria -->
+    <div id="telaGaleria" class="hidden fixed inset-0 z-[70] bg-slate-900/95 backdrop-blur-sm p-4 overflow-y-auto">
+        <div class="max-w-md mx-auto">
+            <div class="flex justify-between items-center mb-6 pt-2">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl"></span>
+                    <h1 class="text-2xl font-bold">Galeria</h1>
+                </div>
+                <button onclick="fecharGaleria()" class="text-sm bg-slate-800/70 hover:bg-slate-700 px-4 py-2 rounded-lg transition">Fechar</button>
+            </div>
+            <div class="mb-4">
+                <label for="inputFoto" class="w-full bg-pink-600 hover:bg-pink-700 p-3 rounded-xl font-bold transition flex items-center justify-center gap-2 cursor-pointer">
+                    <span class="text-xl"></span>
+                    <span>Adicionar Foto</span>
+                </label>
+                <input id="inputFoto" type="file" accept="image/*" multiple class="hidden" onchange="adicionarFotos(event)">
+            </div>
+            <div id="gradeGaleria" class="grid grid-cols-3 gap-2"></div>
+            <p id="galeriaVazia" class="text-center text-slate-500 py-12">Nenhuma foto ainda</p>
+        </div>
+    </div>
+
+    <!-- Tela da Lixeira -->
+    <div id="telaLixeira" class="hidden fixed inset-0 z-[70] bg-slate-900/95 backdrop-blur-sm p-4 overflow-y-auto">
+        <div class="max-w-md mx-auto">
+            <div class="flex justify-between items-center mb-6 pt-2">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl"></span>
+                    <h1 class="text-2xl font-bold">Lixeira</h1>
+                </div>
+                <button onclick="fecharLixeira()" class="text-sm bg-slate-800/70 hover:bg-slate-700 px-4 py-2 rounded-lg transition">Fechar</button>
+            </div>
+            <p class="text-sm text-slate-400 mb-4">Itens ficam aqui por 30 dias antes de serem apagados definitivamente.</p>
+            <div id="listaLixeira" class="space-y-3"></div>
+        </div>
+    </div>
+
+    <!-- App Principal -->
+    <div id="app" class="hidden pb-20">
+        <div class="max-w-md mx-auto">
+            <div class="relative pt-3 px-4">
+                <h2 class="text-base font-semibold text-slate-300">Olá, <span id="nomeUsuarioTopo"></span> </h2>
+                <button id="btnConfig" onclick="abrirSidebar()" style="position:absolute;top:12px;right:16px;width:44px;height:44px;background:#3b82f6;border:none;border-radius:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(59,130,246,0.4);z-index:30;" title="Configurações">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0.73 2.73l.15.08a2 2 0 0 1 1 1.73v.49a2 2 0 0 1-1 1.73l-.15.08a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.73v-.49a2 2 0 0 1 1-1.73l.15-.08a2 2 0 0 0.73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                </button>
+            </div>
+            <div class="flex items-center gap-2 mb-4 px-4">
+                <span class="text-2xl"></span>
+                <h1 class="text-2xl font-bold">Meu Cofre</h1>
+            </div>
+            <div class="mb-4 px-4 space-y-3">
+                <div class="relative">
+                    <input id="busca" onkeyup="renderizarLista()" placeholder="Buscar..." class="w-full p-3 pl-10 rounded-xl glass focus:border-blue-500 focus:outline-none">
+                    <span class="absolute left-3 top-3.5 text-slate-400"></span>
+                </div>
+                <div class="flex gap-2 overflow-x-auto pb-2">
+                    <button onclick="filtrarCat('todos')" class="cat-btn bg-blue-600 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap">Todos</button>
+                    <button onclick="filtrarCat('favoritos')" class="cat-btn bg-slate-700 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap"> Favoritos</button>
+                    <button onclick="filtrarCat('Banco')" class="cat-btn bg-slate-700 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap">Banco</button>
+                    <button onclick="filtrarCat('Social')" class="cat-btn bg-slate-700 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap">Social</button>
+                    <button onclick="filtrarCat('Trabalho')" class="cat-btn bg-slate-700 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap">Trabalho</button>
+                </div>
+            <div id="lista" class="divide-y divide-slate-800"></div>
+        </div>
+        <button onclick="abrirModalAdd()" class="fixed bottom-6 right-6 w-14 h-14 bg-green-500 hover:bg-green-600 rounded-2xl shadow-lg shadow-green-500/40 flex items-center justify-center z-30 active:scale-90 transition">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Modal Add/Editar Senha -->
+    <div id="modalAdd" class="hidden fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center">
+        <div class="modal glass p-5 rounded-t-3xl sm:rounded-2xl w-full sm:max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="font-bold text-lg" id="tituloModalAdd">Nova Senha</h2>
+                <button onclick="fecharModalAdd()" class="text-2xl hover:text-slate-400">×</button>
+            </div>
+            <input id="site" placeholder="Site: ex Instagram" class="w-full p-3 mb-3 rounded-lg bg-slate-800/50 border border-slate-700 focus:border-blue-500 focus:outline-none">
+            <input id="emailSite" placeholder="Email ou usuário" class="w-full p-3 mb-3 rounded-lg bg-slate-800/50 border border-slate-700 focus:border-blue-500 focus:outline-none">
+            <select id="categoria" class="w-full p-3 mb-3 rounded-lg bg-slate-800/50 border border-slate-700 focus:border-blue-500 focus:outline-none">
+                <option value="Geral">Categoria: Geral</option>
+                <option value="Banco">Banco</option>
+                <option value="Social">Social</option>
+                <option value="Trabalho">Trabalho</option>
+                <option value="Jogos">Jogos</option>
+            </select>
+            <div class="relative mb-2">
+                <input id="senha" type="password" onkeyup="medirForca()" placeholder="Senha" class="w-full p-3 rounded-lg bg-slate-800/50 border border-slate-700 focus:border-blue-500 focus:outline-none pr-10">
+                <button onclick="mostrarSenha()" class="absolute right-3 top-3.5 text-slate-400 hover:text-white"></button>
+            </div>
+            <div class="h-1 rounded-full bg-slate-700 mb-3"><div id="forcaBar" class="h-full rounded-full transition-all" style="width:0%"></div></div>
+            <textarea id="nota" placeholder="Nota secreta..." class="w-full p-3 mb-4 rounded-lg bg-slate-800/50 border border-slate-700 focus:border-blue-500 focus:outline-none text-sm" rows="2"></textarea>
+            <div class="grid grid-cols-2 gap-2">
+                <button onclick="gerarSenha()" class="bg-purple-600 hover:bg-purple-700 p-3 rounded-xl font-bold transition">Gerar</button>
+                <button onclick="salvar()" class="bg-blue-600 hover:bg-blue-700 p-3 rounded-xl font-bold transition">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Ver Detalhes / Foto -->
+    <div id="modalVer" class="hidden fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center">
+        <div class="modal glass p-5 rounded-t-3xl sm:rounded-2xl w-full sm:max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-5">
+                <h2 class="font-bold text-xl" id="verTitulo">Detalhes</h2>
+                <button onclick="fecharModalVer()" class="text-3xl hover:text-slate-400">×</button>
+            </div>
+            <div class="flex items-center gap-4 mb-6 p-3 bg-slate-800/40 rounded-xl">
+                <div id="verIcone" class="w-16 h-16 rounded-xl bg-slate-700 flex items-center justify-center text-3xl"></div>
+                <div>
+                    <p class="text-lg font-bold" id="verSite"></p>
+                    <p class="text-sm text-slate-400" id="verCategoria"></p>
+                </div>
+            </div>
+            <div class="space-y-4">
+                <div class="p-3 bg-slate-800/40 rounded-xl">
+                    <p class="text-xs text-slate-500 mb-1">EMAIL / USUÁRIO</p>
+                    <div class="flex justify-between items-center">
+                        <p class="text-base font-mono break-all" id="verEmail"></p>
+                        <button onclick="copiarTexto('verEmail')" class="bg-blue-700 hover:bg-blue-600 px-3 py-1.5 rounded-lg text-sm ml-2">Copiar</button>
+                    </div>
+                </div>
+                <div class="p-3 bg-slate-800/40 rounded-xl">
+                    <p class="text-xs text-slate-500 mb-1">SENHA</p>
+                    <div class="flex justify-between items-center">
+                        <p class="text-base font-mono break-all" id="verSenha">••••••••</p>
+                        <div class="flex gap-2 ml-2">
+                            <button onclick="toggleVerSenha()" class="bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-lg text-sm"></button>
+                            <button onclick="copiarTexto('verSenha', true)" class="bg-green-700 hover:bg-green-600 px-3 py-1.5 rounded-lg text-sm">Copiar</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="verNotaBox" class="hidden p-3 bg-slate-800/40 rounded-xl">
+                    <p class="text-xs text-slate-500 mb-1">NOTA SECRETA</p>
+                    <p class="text-sm" id="verNota"></p>
+                </div>
+                <div class="p-3 bg-slate-800/40 rounded-xl">
+                    <p class="text-xs text-slate-500 mb-1">CRIADO EM</p>
+                    <p class="text-sm" id="verData"></p>
+                </div>
+            <div class="grid grid-cols-2 gap-3 mt-6">
+                <button onclick="editarDaqui()" class="bg-yellow-600 hover:bg-yellow-700 p-3 rounded-xl font-bold transition">Editar</button>
+                <button id="btnDeletarVer" class="bg-red-600 hover:bg-red-700 p-3 rounded-xl font-bold transition">Deletar</button>
+            </div>
+        </div>
+    </div>
+
+  <!-- Modal Foto Tela Cheia - NOVO -->
+<div id="modalFotoTela" class="hidden fixed inset-0 z-[80] bg-black touch-pan-y">
+    <div class="relative w-full h-full flex items-center justify-center">
+
+        <!-- Botão Baixar Direto -->
+        <button onclick="baixarFotoAtual(event)" class="absolute top-4 left-4 z-10 bg-black/60 hover:bg-black/80 text-white p-3 rounded-full">
+            <img src="https://i.ibb.co/hMbFsgqd/baixar.png" class="w-6 h-6" alt="Download">
+        </button>
+
+        <!-- Botão Fechar -->
+        <button onclick="fecharFotoTela()" class="absolute top-4 right-4 z-10 bg-slate-700 hover:bg-slate-600 text-white p-3 rounded-full">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+
+        <!-- Foto com zoom -->
+        <img id="fotoTelaGrande" src="" class="max-w-full max-h-full object-contain" style="touch-action: pan-x pan-y pinch-zoom;">
+
+        <!-- Botão Deletar embaixo -->
+        <button onclick="deletarFotoTela()" class="absolute bottom-6 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-full flex items-center gap-2">
+            <span></span>
+            <span>Deletar Foto</span>
+        </button>
+
+    </div>
+</div>
+
+<!-- Parte 2 vem no próximo passo - o SCRIPT -->
+</body>
+</html>
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js'
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile, EmailAuthProvider, reauthenticateWithCredential, sendPasswordResetEmail } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js'
+import { getFirestore, collection, doc, setDoc, getDocs, deleteDoc, query, where, getDoc, addDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js'
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDIrg7a8xw1tyaD-cgtqBj17A0mtWP4k2Q",
+  authDomain: "salva-arquivos-e-senha.firebaseapp.com",
+  projectId: "salva-arquivos-e-senha",
+  storageBucket: "salva-arquivos-e-senha.appspot.com",
+  messagingSenderId: "818300918854",
+  appId: "1:818300918854:web:14f32d970865ae9a32fe47"
+};
+
+const app = initializeApp(firebaseConfig)
+const auth = getAuth(app)
+const db = getFirestore(app)
+
+let categoriaAtiva = 'todos'
+let editandoId = null
+let senhasCache = []
+let bloqueado = true
+let ignorarProximoAuth = false
+let modalCallback = null
+let senhaAtualVer = ''
+let itemAtualVer = null
+
+// ========== GALERIA LEVE - SUPORTA MILHARES DE FOTOS ==========
+const G = { fotos: [], i: 0, zoom: 1, x: 0, y: 0, lastTap: 0, pinch: null };
+
+// 1. LAZY LOAD DAS MINIATURAS
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const img = e.target;
+      if (img.dataset.src) {
+        img.src = img.dataset.src;
+        img.removeAttribute('data-src');
+        observer.unobserve(img);
+      }
+    }
+  });
+}, { rootMargin: '50px' });
+
+// 2. INICIALIZA LAZY LOAD QUANDO CARREGAR A GALERIA
+window.initGaleriaLazy = function() {
+  document.querySelectorAll('#galeria img[data-src]').forEach(img => observer.observe(img));
+}
+
+// 3. ABRIR GALERIA - PEGA SÓ OS SRC, NÃO CARREGA NADA
+document.getElementById('galeria')?.addEventListener('click', (e) => {
+  const img = e.target.closest('img');
+  if (!img) return;
+  e.preventDefault();
+
+  // Pega URL original do data-full ou do src
+  const urlOriginal = img.dataset.full || img.src || img.dataset.src;
+  if (!urlOriginal) return;
+
+  // Monta array só com URLs, não com elementos
+  G.fotos = Array.from(document.querySelectorAll('#galeria img'))
+  .map(i => i.dataset.full || i.src || i.dataset.src)
+  .filter(Boolean);
+
+  G.i = G.fotos.indexOf(urlOriginal);
+  if (G.i === -1) return;
+
+  abrirModal();
+});
+
+function abrirModal() {
+  G.zoom = 1; G.x = 0; G.y = 0;
+  document.body.style.overflow = 'hidden';
+
+  const m = document.createElement('div');
+  m.id = 'modalZoom';
+  m.style.cssText = 'position:fixed;inset:0;z-index:9999;background:#000;display:flex;align-items:center;justify-content:center';
+
+  m.innerHTML = `
+    <div id="contadorZoom" style="position:absolute;top:16px;left:50%;transform:translateX(-50%);color:#fff;font-size:12px;background:rgba(0,0,0,.6);padding:6px 12px;border-radius:20px;z-index:2">
+      ${G.i + 1} / ${G.fotos.length}
+    </div>
+    <button id="btnFechar" style="position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.6);border:none;color:#fff;font-size:22px;z-index:2;touch-action:manipulation">×</button>
+    <div id="zoomBox" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;touch-action:none">
+      <img id="zoomImg" src="${G.fotos[G.i]}" style="max-width:100%;max-height:100%;object-fit:contain;transform:translate(0,0) scale(1);user-select:none;-webkit-user-drag:none">
+    </div>
+  `;
+
+  document.body.appendChild(m);
+  document.getElementById('btnFechar').onclick = fecharZoom;
+  initZoom();
+  preload();
+}
+
+// 4. PRELOAD SÓ 1 ANTES E 1 DEPOIS
+function preload() {
+  const t = G.fotos.length;
+  if (t <= 1) return;
+  const imgs = [G.fotos[(G.i + 1) % t], G.fotos[(G.i - 1 + t) % t]];
+  imgs.forEach(src => {
+    const img = new Image();
+    img.src = src;
+  });
+}
+
+window.fecharZoom = function() {
+  document.getElementById('modalZoom')?.remove();
+  document.body.style.overflow = '';
+}
+
+function trocaFoto(d) {
+  const t = G.fotos.length;
+  if (t <= 1) return;
+
+  G.i = (G.i + d + t) % t;
+  G.zoom = 1; G.x = 0; G.y = 0;
+
+  const img = document.getElementById('zoomImg');
+  const cnt = document.getElementById('contadorZoom');
+
+  img.style.transition = 'none';
+  img.style.opacity = '0';
+  img.src = G.fotos[G.i];
+  img.style.transform = 'translate(0,0) scale(1)';
+  img.offsetHeight; // Force reflow
+
+  img.style.transition = 'opacity 0.15s ease';
+  img.style.opacity = '1';
+  cnt.textContent = `${G.i + 1} / ${t}`;
+  preload();
+}
+
+function initZoom() {
+  const img = document.getElementById('zoomImg');
+  const box = document.getElementById('zoomBox');
+  let s = { x: 0, y: 0 };
+
+  box.addEventListener('click', (e) => {
+    if (e.target.id === 'btnFechar') return;
+    const now = Date.now();
+    if (now - G.lastTap < 300) {
+      G.zoom = G.zoom === 1? 2 : G.zoom === 2? 4 : 1;
+      if (G.zoom === 1) { G.x = 0; G.y = 0; }
+      img.style.transition = 'transform 0.25s cubic-bezier(0.2, 0, 0, 1)';
+      img.style.transform = `translate(${G.x}px,${G.y}px) scale(${G.zoom})`;
+    }
+    G.lastTap = now;
+  });
+
+  box.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 2) {
+      e.preventDefault();
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      G.pinch = { dist: Math.hypot(dx, dy), zoom: G.zoom };
+      img.style.transition = 'none';
+    } else if (e.touches.length === 1) {
+      s = { x: e.touches[0].clientX - G.x, y: e.touches[0].clientY - G.y };
+      if (G.zoom > 1) img.style.transition = 'none';
+    }
+  }, { passive: false });
+
+  box.addEventListener('touchmove', (e) => {
+    if (e.touches.length === 2 && G.pinch) {
+      e.preventDefault();
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      const dist = Math.hypot(dx, dy);
+      G.zoom = Math.min(Math.max(1, dist / G.pinch.dist * G.pinch.zoom), 4);
+      img.style.transform = `translate(${G.x}px,${G.y}px) scale(${G.zoom})`;
+    } else if (e.touches.length === 1) {
+      if (G.zoom > 1) {
+        e.preventDefault();
+        G.x = e.touches[0].clientX - s.x;
+        G.y = e.touches[0].clientY - s.y;
+        img.style.transform = `translate(${G.x}px,${G.y}px) scale(${G.zoom})`;
+      } else {
+        const dx = e.touches[0].clientX - s.x - G.x;
+        const dy = e.touches[0].clientY - s.y - G.y;
+        img.style.transition = 'none';
+        img.style.transform = `translate(${dx * 0.5}px,${dy * 0.3}px) scale(1)`;
+      }
+    }
+  }, { passive: false });
+
+  box.addEventListener('touchend', (e) => {
+    if (G.pinch) {
+      G.pinch = null;
+      img.style.transition = 'transform 0.25s cubic-bezier(0.2, 0, 0, 1)';
+      if (G.zoom < 1.1) {
+        G.zoom = 1; G.x = 0; G.y = 0;
+        img.style.transform = 'translate(0,0) scale(1)';
+      }
+      return;
+    }
+
+    img.style.transition = 'transform 0.25s cubic-bezier(0.2, 0, 0, 1)';
+
+    if (G.zoom === 1 && e.changedTouches.length === 1) {
+      const dx = e.changedTouches[0].clientX - s.x - G.x;
+      const dy = e.changedTouches[0].clientY - s.y - G.y;
+
+      if (Math.abs(dy) > 100 && Math.abs(dx) < 80) {
+        fecharZoom();
+        return;
+      }
+      if (Math.abs(dx) > 50 && Math.abs(dy) < 80 && G.fotos.length > 1) {
+        trocaFoto(dx > 0? -1 : 1);
+        return;
+      }
+      img.style.transform = 'translate(0,0) scale(1)';
+    }
+  });
+}
+// ========== FIM GALERIA ==========
+
+// FUNÇÃO PRA SALVAR FOTO NA GALERIA
+window.salvarFotoNaGaleria = (base64) => {
+  if(window.Android && window.Android.salvarNaGaleria) {
+    window.Android.salvarNaGaleria(base64)
+  } else {
+    const link = document.createElement('a')
+    link.href = base64
+    link.download = 'cofre_' + Date.now() + '.png'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+
+    const toast = document.getElementById('toastSalvo')
+    if (toast) {
+      toast.textContent = 'Baixado!'
+      toast.classList.remove('hidden')
+      setTimeout(() => toast.classList.add('hidden'), 1500)
+    }
+  }
+}
+
+  window.recuperarSenha = async () => {
+    const email = document.getElementById('emailLogin').value.trim()
+    const msg = document.getElementById('msgLogin')
+    if (!email) {
+      msg.textContent = 'Digite seu email primeiro'
+      msg.classList.add('text-red-400')
+      msg.classList.remove('text-green-400')
+      return
+    }
+    try {
+      await sendPasswordResetEmail(auth, email)
+      msg.classList.remove('text-red-400')
+      msg.classList.add('text-green-400')
+      msg.textContent = 'Link enviado! Checa teu email'
+    } catch (e) {
+      msg.classList.add('text-red-400')
+      msg.classList.remove('text-green-400')
+      if (e.code === 'auth/user-not-found') msg.textContent = 'Email não cadastrado'
+      else if (e.code === 'auth/invalid-email') msg.textContent = 'Email inválido'
+      else msg.textContent = 'Erro: ' + e.message
+    }
+  }
+
+  function mostrarModal(titulo, texto, icone, corBtn, callback) {
+    document.getElementById('modalTitle').textContent = titulo
+    document.getElementById('modalText').textContent = texto
+    document.getElementById('modalIcon').textContent = icone
+    const btn = document.getElementById('modalBtnConfirm')
+    btn.className = `${corBtn} hover:opacity-90 p-3 rounded-lg font-bold transition`
+    modalCallback = callback
+    document.getElementById('modalConfirm').classList.remove('hidden')
+  }
+
+  window.fecharModal = () => {
+    document.getElementById('modalConfirm').classList.add('hidden')
+    modalCallback = null
+  }
+
+  document.getElementById('modalBtnConfirm').onclick = () => {
+    if (modalCallback) modalCallback()
+    fecharModal()
+  }
+
+  window.abrirModalNome = () => {
+    document.getElementById('senhaAtualNome').value = ''
+    document.getElementById('novoNome').value = auth.currentUser.displayName || ''
+    document.getElementById('msgEditarNome').textContent = ''
+    document.getElementById('modalEditarNome').classList.remove('hidden')
+    fecharSidebar()
+  }
+
+  window.fecharModalNome = () => {
+    document.getElementById('modalEditarNome').classList.add('hidden')
+    document.getElementById('senhaAtualNome').value = ''
+    document.getElementById('novoNome').value = ''
+    document.getElementById('msgEditarNome').textContent = ''
+  }
+
+  window.salvarNovoNome = async () => {
+    const senha = document.getElementById('senhaAtualNome').value
+    const novoNome = document.getElementById('novoNome').value.trim()
+    const msg = document.getElementById('msgEditarNome')
+    if (!senha ||!novoNome) {
+      msg.textContent = 'Preenche tudo'
+      return
+    }
+    if (novoNome === auth.currentUser.displayName) {
+      msg.textContent = 'Esse já é seu nome atual'
+      return
+    }
+    try {
+      const user = auth.currentUser
+      const cred = EmailAuthProvider.credential(user.email, senha)
+      await reauthenticateWithCredential(user, cred)
+      await updateProfile(user, { displayName: novoNome })
+      document.getElementById('nomeUsuarioTopo').textContent = novoNome
+      document.getElementById('nomeUsuarioBloq').textContent = novoNome
+      fecharModalNome()
+      mostrarModal('Sucesso!', 'Nome alterado com sucesso', '', 'bg-green-600', null)
+    } catch (e) {
+      if (e.code === 'auth/wrong-password' || e.code === 'auth/invalid-credential') {
+        msg.textContent = 'Senha incorreta'
+      } else {
+        msg.textContent = 'Erro: ' + e.message
+      }
+    }
+  }
+
+  window.desbloquear = async () => {
+    const senha = document.getElementById('senhaDesbloqueio').value
+    const email = auth.currentUser.email
+    try {
+      ignorarProximoAuth = true
+      await signInWithEmailAndPassword(auth, email, senha)
+      bloqueado = false
+      document.getElementById('telaBloqueio').classList.add('hidden')
+      document.getElementById('app').classList.remove('hidden')
+      setTimeout(() => { ignorarProximoAuth = false }, 1000)
+    } catch (e) {
+      ignorarProximoAuth = false
+      document.getElementById('msgBloqueio').textContent = 'Senha incorreta'
+    }
+  }
+
+  window.mostrarCadastro = () => {
+    document.getElementById('formLogin').classList.add('hidden')
+    document.getElementById('formCadastro').classList.remove('hidden')
+    document.getElementById('msgLogin').textContent = ''
+  }
+
+  window.voltarLogin = () => {
+    document.getElementById('formCadastro').classList.add('hidden')
+    document.getElementById('formLogin').classList.remove('hidden')
+    document.getElementById('msgLogin').textContent = ''
+  }
+
+  window.medirForcaCadastro = () => {
+    const senha = document.getElementById('senhaCadastro').value
+    const bar = document.getElementById('forcaBarCadastro')
+    let forca = 0
+    if (senha.length >= 8) forca += 25
+    if (senha.length >= 12) forca += 25
+    if (/[a-z]/.test(senha) && /[A-Z]/.test(senha)) forca += 25
+    if (/[0-9]/.test(senha) && /[^a-zA-Z0-9]/.test(senha)) forca += 25
+    bar.style.width = forca + '%'
+    bar.className = 'h-full rounded-full transition-all ' + (forca < 50? 'forca-fraca' : forca < 75? 'forca-media' : 'forca-forte')
+  }
+
+  window.mostrarSenhaCadastro = () => {
+    const input = document.getElementById('senhaCadastro')
+    input.type = input.type === 'password'? 'text' : 'password'
+  }
+
+  window.criarConta = async () => {
+    const nome = document.getElementById('nomeCadastro').value.trim()
+    const email = document.getElementById('emailCadastro').value
+    const senha = document.getElementById('senhaCadastro').value
+    if (!nome ||!email ||!senha) {
+      document.getElementById('msgLogin').textContent = 'Preenche todos os campos'
+      return
+    }
+    if (senha.length < 8) {
+      document.getElementById('msgLogin').textContent = 'Senha precisa ter 8+ caracteres'
+      return
+    }
+    try {
+      const userCred = await createUserWithEmailAndPassword(auth, email, senha)
+      await updateProfile(userCred.user, { displayName: nome })
+      document.getElementById('msgLogin').textContent = ''
+    } catch (e) {
+      document.getElementById('msgLogin').textContent = e.message
+    }
+  }
+
+  window.entrar = async () => {
+    const email = document.getElementById('emailLogin').value
+    const senha = document.getElementById('senhaLogin').value
+    const msg = document.getElementById('msgLogin')
+    if (!email ||!senha) {
+      msg.textContent = 'Preenche email e senha'
+      return
+    }
+    try {
+      await signInWithEmailAndPassword(auth, email, senha)
+      msg.textContent = ''
+    } catch (e) {
+      msg.textContent = e.message
+    }
+  }
+
+  window.sair = () => {
+    bloqueado = true
+    signOut(auth)
+  }
+
+  // === GALERIA COM TELA CHEIA ===
+  window.abrirGaleria = async () => {
+    document.getElementById('telaGaleria').classList.remove('hidden')
+    await carregarGaleria()
+    fecharSidebar()
+  }
+
+  window.fecharGaleria = () => {
+    document.getElementById('telaGaleria').classList.add('hidden')
+  }
+
+  async function carregarGaleria() {
+    const user = auth.currentUser
+    if (!user) return
+    const q = query(collection(db, 'galeria'), where('uid', '==', user.uid))
+    const snap = await getDocs(q)
+    const fotos = snap.docs.map(d => ({ id: d.id,...d.data() }))
+    const grade = document.getElementById('gradeGaleria')
+    const vazio = document.getElementById('galeriaVazia')
+
+    if (fotos.length === 0) {
+      grade.innerHTML = ''
+      vazio.classList.remove('hidden')
+      return
+    }
+
+    vazio.classList.add('hidden')
+    grade.innerHTML = fotos.map(foto => `
+      <div class="relative group">
+        <img src="${foto.url}"
+             class="w-full h-32 object-cover rounded-lg cursor-pointer"
+             onclick="abrirImagemZoom('${foto.url}')"
+             oncontextmenu="event.preventDefault(); menuFoto('${foto.id}', '${foto.url}', '${foto.public_id}')"
+             ontouchstart="startLongPress('${foto.id}', '${foto.url}', '${foto.public_id}')"
+             ontouchend="endLongPress()"
+             ontouchmove="endLongPress()">
+        <button onclick="event.stopPropagation(); confirmarDeletarFoto('${foto.id}', '${foto.public_id}')" class="absolute top-1 right-1 bg-red-600 text-white rounded-full w-6 h-6 text-xs opacity-0 group-hover:opacity-100 transition">×</button>
+      </div>
+    `).join('')
+  }
+
+  let longPressTimer = null
+  window.startLongPress = (id, url, public_id) => {
+    longPressTimer = setTimeout(() => {
+      navigator.vibrate && navigator.vibrate(50)
+      menuFoto(id, url, public_id)
+    }, 500)
+  }
+  window.endLongPress = () => {
+    if (longPressTimer) clearTimeout(longPressTimer)
+  }
+
+  window.menuFoto = (id, url, public_id) => {
+    mostrarModal('Opções da Foto', 'O que você quer fazer?', '', 'bg-blue-600', null)
+    const modal = document.querySelector('#modalConfirm.grid')
+    modal.innerHTML = `
+      <button onclick="salvarFotoPorUrl('${url}', 'foto_${Date.now()}.jpg'); fecharModal()" class="bg-blue-600 hover:bg-blue-700 p-3 rounded-lg font-bold transition"> Salvar</button>
+      <button onclick="abrirFotoTela('${id}', '${url}'); fecharModal()" class="bg-purple-600 hover:bg-purple-700 p-3 rounded-lg font-bold transition"> Tela Cheia</button>
+      <button onclick="confirmarDeletarFoto('${id}', '${public_id}'); fecharModal()" class="bg-red-600 hover:bg-red-700 p-3 rounded-lg font-bold transition col-span-2"> Deletar</button>
+      <button onclick="fecharModal()" class="bg-slate-700 hover:bg-slate-600 p-3 rounded-lg font-bold transition col-span-2">Cancelar</button>
+    `
+  }
+
+  window.abrirFotoTela = (id, url) => {
+    fotoAtualTela = { id, url }
+    const img = document.getElementById('fotoTelaGrande')
+    img.src = url
+    img.style.transform = 'scale(1)'
+    scale = 1
+    lastScale = 1
+    document.getElementById('modalFotoTela').classList.remove('hidden')
+    document.body.style.overflow = 'hidden'
+    setupZoom()
+  }
+
+  window.fecharFotoTela = () => {
+    document.getElementById('modalFotoTela').classList.add('hidden')
+    document.body.style.overflow = 'auto'
+    fotoAtualTela = null
+  }
+
+  window.salvarFoto = () => {
+    if (!fotoAtualTela) return
+    salvarFotoPorUrl(fotoAtualTela.url, `foto_${Date.now()}.jpg`)
+  }
+
+  window.salvarFotoPorUrl = (url, nome) => {
+    const a = document.createElement('a')
+    a.href = url
+    a.download = nome
+    a.target = '_blank'
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    mostrarModal('Salvando...', 'Foto baixando pro teu celular', '', 'bg-green-600', null)
+    setTimeout(fecharModal, 1500)
+  }
+
+  window.deletarFotoTela = () => {
+    if (!fotoAtualTela) return
+    fecharFotoTela()
+    mostrarModal('Apagar foto?', 'Tem certeza que quer apagar essa foto?', '', 'bg-red-600', () => deletarFoto(fotoAtualTela.id, null))
+  }
+
+  function setupZoom() {
+    const img = document.getElementById('fotoTelaGrande')
+    let touchStartY = 0
+    let currentY = 0
+    let isDragging = false
+
+    img.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 1) {
+        touchStartY = e.touches[0].clientY
+        startY = touchStartY
+        isDragging = true
+      } else if (e.touches.length === 2) {
+        isDragging = false
+        startDist = getDistance(e.touches[0], e.touches[1])
+      }
+    })
+
+    img.addEventListener('touchmove', (e) => {
+      if (e.touches.length === 1 && isDragging && scale === 1) {
+        currentY = e.touches[0].clientY
+        const diff = currentY - startY
+        if (diff > 0) {
+          img.style.transform = `translateY(${diff}px)`
+          e.preventDefault()
+        }
+      } else if (e.touches.length === 2) {
+        const dist = getDistance(e.touches[0], e.touches[1])
+        scale = Math.max(0.5, Math.min(3, lastScale * (dist / startDist)))
+        img.style.transform = `scale(${scale})`
+        e.preventDefault()
+      }
+    })
+
+    img.addEventListener('touchend', (e) => {
+      if (isDragging && scale === 1) {
+        const diff = currentY - startY
+        if (diff > 100) {
+          fecharFotoTela()
+        } else {
+          img.style.transform = 'scale(1)'
+        }
+      }
+      if (e.touches.length === 0) {
+        lastScale = scale
+        isDragging = false
+      }
+    })
+
+    img.addEventListener('wheel', (e) => {
+      e.preventDefault()
+      const delta = e.deltaY > 0? 0.9 : 1.1
+      scale = Math.max(0.5, Math.min(3, scale * delta))
+      img.style.transform = `scale(${scale})`
+    })
+  }
+
+  function getDistance(touch1, touch2) {
+    const dx = touch1.clientX - touch2.clientX
+    const dy = touch1.clientY - touch2.clientY
+    return Math.sqrt(dx * dx + dy * dy)
+  }
+
+  window.adicionarFotos = async (event) => {
+    const files = event.target.files
+    const user = auth.currentUser
+    if (!user ||!files.length) {
+      event.target.value = ''
+      return
+    }
+
+    const CLOUD_NAME = 'dyzlk2ttb'
+    const UPLOAD_PRESET = 'galeria'
+
+    mostrarModal('Enviando...', `Subindo ${files.length} foto(s)`, '', 'bg-blue-600', null)
+
+    for (let file of files) {
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('upload_preset', UPLOAD_PRESET)
+      formData.append('folder', `galeria/${user.uid}`)
+
+      try {
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+          method: 'POST',
+          body: formData
+        })
+        const data = await res.json()
+
+        if (data.secure_url) {
+          await addDoc(collection(db, 'galeria'), {
+            uid: user.uid,
+            url: data.secure_url,
+            nome: file.name,
+            public_id: data.public_id,
+            criadoEm: new Date().toISOString()
+          })
+        } else {
+          console.error('Erro Cloudinary:', data)
+          throw new Error(data.error?.message || 'Upload falhou')
+        }
+      } catch (error) {
+        mostrarModal('Erro', `Não subiu: ${file.name}`, '', 'bg-red-600', null)
+        console.error(error)
+      }
+    }
+
+    event.target.value = ''
+    fecharModal()
+    await carregarGaleria()
+    mostrarModal('Sucesso!', 'Fotos adicionadas na galeria', '', 'bg-green-600', null)
+  }
+
+  window.confirmarDeletarFoto = (id, public_id) => {
+    mostrarModal('Apagar foto?', 'Tem certeza que quer apagar essa foto?', '', 'bg-red-600', () => deletarFoto(id, public_id))
+  }
+
+  window.deletarFoto = async (id, public_id) => {
+    try {
+      await deleteDoc(doc(db, 'galeria', id))
+      await carregarGaleria()
+      mostrarModal('Apagada!', 'Foto removida da galeria', '', 'bg-green-600', null)
+    } catch (e) {
+      console.error('Erro ao deletar:', e)
+      mostrarModal('Erro!', 'Não deu pra apagar a foto', '', 'bg-red-600', null)
+    }
+  }
+
+  window.abrirModalAdd = () => {
+    editandoId = null
+    document.getElementById('tituloModalAdd').textContent = 'Nova Senha'
+    document.getElementById('modalAdd').classList.remove('hidden')
+    limparForm()
+  }
+
+  window.fecharModalAdd = () => {
+    document.getElementById('modalAdd').classList.add('hidden')
+    editandoId = null
+    limparForm()
+  }
+
+  window.editarSenha = (id) => {
+    const item = senhasCache.find(s => s.id === id)
+    if (!item) return
+    editandoId = id
+    document.getElementById('tituloModalAdd').textContent = 'Editar Senha'
+    document.getElementById('site').value = item.site
+    document.getElementById('emailSite').value = item.email
+    document.getElementById('senha').value = item.senha
+    document.getElementById('categoria').value = item.categoria
+    document.getElementById('nota').value = item.nota || ''
+    medirForca()
+    document.getElementById('modalAdd').classList.remove('hidden')
+  }
+
+  window.abrirDetalhes = (id) => {
+    const item = senhasCache.find(s => s.id === id)
+    if (!item) return
+    itemAtualVer = item
+    senhaAtualVer = item.senha
+
+    const dominio = item.site.toLowerCase().replace(/https?:\/\//, '').split('/')[0]
+    const iconeBox = document.getElementById('verIcone')
+    const icone = item.categoria === 'Banco'? '' : item.categoria === 'Social'? '' : item.categoria === 'Trabalho'? '' : item.categoria === 'Jogos'? '' : ''
+    iconeBox.innerHTML = `<img src="https://logo.clearbit.com/${dominio}" class="w-full h-full rounded-xl bg-white p-2" onerror="this.parentElement.innerHTML='<div class=\\'w-16 h-16 rounded-xl bg-slate-700 flex items-center justify-center text-3xl\\'>${item.favorito? '' : icone}</div>'">`
+    document.getElementById('verTitulo').textContent = item.site
+    document.getElementById('verSite').textContent = item.site
+    document.getElementById('verCategoria').textContent = item.categoria
+    document.getElementById('verEmail').textContent = item.email
+    document.getElementById('verSenha').textContent = '••••••••'
+    document.getElementById('verData').textContent = item.criadoEm? new Date(item.criadoEm).toLocaleDateString('pt-BR', {day: '2-digit', month: 'long', year: 'numeric'}) : 'Hoje'
+    if (item.nota) {
+      document.getElementById('verNotaBox').classList.remove('hidden')
+      document.getElementById('verNota').textContent = item.nota
+    } else {
+      document.getElementById('verNotaBox').classList.add('hidden')
+    }
+    document.getElementById('modalVer').classList.remove('hidden')
+  }
+
+  window.fecharModalVer = () => {
+    document.getElementById('modalVer').classList.add('hidden')
+    itemAtualVer = null
+    senhaAtualVer = ''
+  }
+
+  window.toggleVerSenha = () => {
+    const el = document.getElementById('verSenha')
+    el.textContent = el.textContent === '••••••••'? senhaAtualVer : '••••••••'
+  }
+
+  window.copiarTexto = (id, ehSenha = false) => {
+    const texto = ehSenha? senhaAtualVer : document.getElementById(id).textContent
+    navigator.clipboard.writeText(texto)
+    mostrarModal('Copiado!', 'Texto copiado pra área de transferência', '', 'bg-green-600', null)
+  }
+
+  window.editarDaqui = () => {
+    const id = itemAtualVer.id
+    fecharModalVer()
+    setTimeout(() => editarSenha(id), 100)
+  }
+
+  window.deletarDaqui = () => {
+    const id = itemAtualVer.id
+    fecharModalVer()
+    setTimeout(() => confirmarDeletar(id), 100)
+  }
+
+  window.salvar = async () => {
+    const user = auth.currentUser
+    if (!user) {
+      alert('Usuário não logado!')
+      return
+    }
+    const site = document.getElementById('site').value.trim()
+    const emailSite = document.getElementById('emailSite').value.trim()
+    const senha = document.getElementById('senha').value
+    const categoria = document.getElementById('categoria').value
+    const nota = document.getElementById('nota').value
+    if (!site ||!senha) {
+      alert('Preenche o site e a senha!')
+      return
+    }
+    const dados = {
+      site,
+      email: emailSite,
+      senha,
+      categoria,
+      nota,
+      uid: user.uid,
+      favorito: editandoId? (senhasCache.find(s => s.id === editandoId)?.favorito || false) : false,
+      criadoEm: editandoId? (senhasCache.find(s => s.id === editandoId)?.criadoEm || new Date().toISOString()) : new Date().toISOString()
+    }
+    try {
+      if (editandoId) {
+        await setDoc(doc(db, 'cofre', editandoId), dados)
+        const idx = senhasCache.findIndex(s => s.id === editandoId)
+        if (idx!== -1) senhasCache[idx] = { id: editandoId,...dados }
+      } else {
+        const docRef = await addDoc(collection(db, 'cofre'), dados)
+        dados.id = docRef.id
+        senhasCache.push(dados)
+      }
+      fecharModalAdd()
+      renderizarLista()
+    } catch(e) {
+      console.error('Erro ao salvar:', e)
+      alert('Erro ao salvar: ' + e.message)
+    }
+  }
+
+  function limparForm() {
+    document.getElementById('site').value = ''
+    document.getElementById('emailSite').value = ''
+    document.getElementById('senha').value = ''
+    document.getElementById('nota').value = ''
+    document.getElementById('categoria').value = 'Geral'
+    document.getElementById('forcaBar').style.width = '0%'
+  }
+
+  window.confirmarDeletar = (id) => {
+    const item = senhasCache.find(s => s.id === id)
+    if (!item) return
+    mostrarModal('Mover para lixeira?', `Deseja mover "${item.site}" para a lixeira?`, '', 'bg-red-600', () => deletarSenha(id))
+  }
+
+  async function deletarSenha(id) {
+    try {
+      const user = auth.currentUser
+      if (!user) return
+      const item = senhasCache.find(s => s.id === id)
+      if (!item) return
+      const { id: idRemover,...dados } = item
+      await addDoc(collection(db, 'lixeira'), {
+       ...dados,
+        uid: user.uid,
+        deletedAt: new Date().toISOString(),
+        originalId: id
+      })
+      await deleteDoc(doc(db, 'cofre', id))
+      senhasCache = senhasCache.filter(s => s.id!== id)
+      renderizarLista()
+    } catch(e) {
+      console.error('Erro ao deletar:', e)
+      alert('Erro: ' + e.message)
+    }
+  }
+
+  window.abrirLixeira = async () => {
+    document.getElementById('telaLixeira').classList.remove('hidden')
+    await carregarLixeira()
+    fecharSidebar()
+  }
+
+  window.fecharLixeira = () => {
+    document.getElementById('telaLixeira').classList.add('hidden')
+  }
+
+  async function carregarLixeira() {
+    const user = auth.currentUser
+    if (!user) return
+    const q = query(collection(db, 'lixeira'), where('uid', '==', user.uid))
+    const snap = await getDocs(q)
+    let itens = snap.docs.map(d => ({ id: d.id,...d.data() }))
+    const trintaDiasAtras = new Date()
+    trintaDiasAtras.setDate(trintaDiasAtras.getDate() - 30)
+    itens = itens.filter(item => new Date(item.deletedAt) > trintaDiasAtras)
+    const lista = document.getElementById('listaLixeira')
+    if (itens.length === 0) {
+      lista.innerHTML = '<p class="text-center text-slate-500 py-8">Lixeira vazia</p>'
+      return
+    }
+    lista.innerHTML = itens.map(item => {
+      const diasRestantes = Math.ceil((new Date(item.deletedAt).getTime() + 30*24*60*60*1000 - Date.now()) / (1000*60*60*24))
+      return `
+      <div class="glass p-4 rounded-xl">
+          <div class="flex justify-between items-start mb-2">
+              <div>
+                  <p class="font-bold">${item.site}</p>
+                  <p class="text-xs text-slate-400">${item.email}</p>
+                  <p class="text-xs text-orange-400 mt-1">Expira em ${diasRestantes} dias</p>
+              </div>
+          </div>
+          <div class="grid grid-cols-2 gap-2 mt-3">
+              <button onclick="restaurar('${item.id}')" class="bg-green-700 py-2 rounded text-sm">Restaurar</button>
+              <button onclick="apagarDefinitivo('${item.id}')" class="bg-red-700 py-2 rounded text-sm">Apagar</button>
+          </div>
+      </div>`
+    }).join('')
+  }
+
+  window.restaurar = async (idLixeira) => {
+    try {
+      const user = auth.currentUser
+      if (!user) return
+      const docRef = doc(db, 'lixeira', idLixeira)
+      const docSnap = await getDoc(docRef)
+      if (!docSnap.exists()) return
+      const item = docSnap.data()
+      const { deletedAt, originalId, id,...itemRestaurado } = item
+      const docNovo = await addDoc(collection(db, 'cofre'), {
+       ...itemRestaurado,
+        uid: user.uid
+      })
+      await deleteDoc(docRef)
+      itemRestaurado.id = docNovo.id
+      senhasCache.push(itemRestaurado)
+      await carregarLixeira()
+      renderizarLista()
+    } catch(e) {
+      console.error('Erro ao restaurar:', e)
+      alert('Erro ao restaurar: ' + e.message)
+    }
+  }
+
+  window.apagarDefinitivo = async (id) => {
+    try {
+      await deleteDoc(doc(db, 'lixeira', id))
+      await carregarLixeira()
+    } catch(e) {
+      console.error('Erro ao apagar:', e)
+      alert('Erro: ' + e.message)
+    }
+  }
+
+  async function limparLixeiraAntiga() {
+    const user = auth.currentUser
+    if (!user) return
+    const q = query(collection(db, 'lixeira'), where('uid', '==', user.uid))
+    const snap = await getDocs(q)
+    const trintaDiasAtras = new Date()
+    trintaDiasAtras.setDate(trintaDiasAtras.getDate() - 30)
+    snap.docs.forEach(async (d) => {
+      if (new Date(d.data().deletedAt) < trintaDiasAtras) {
+        await deleteDoc(doc(db, 'lixeira', d.id))
+      }
+    })
+  }
+
+  onAuthStateChanged(auth, user => {
+    if (ignorarProximoAuth) return
+
+    if (user) {
+      document.getElementById('telaLogin').classList.add('hidden')
+      document.getElementById('nomeUsuarioBloq').textContent = user.displayName || 'Usuário'
+      document.getElementById('nomeUsuarioTopo').textContent = user.displayName || 'Usuário'
+      document.getElementById('userEmailSide').textContent = user.email
+
+      document.getElementById('telaBloqueio').classList.remove('hidden')
+      document.getElementById('app').classList.add('hidden')
+      bloqueado = true
+
+      carregar()
+      limparLixeiraAntiga()
+    } else {
+      document.getElementById('telaLogin').classList.remove('hidden')
+      document.getElementById('app').classList.add('hidden')
+      document.getElementById('telaBloqueio').classList.add('hidden')
+      bloqueado = true
+    }
+  })
+
+  window.carregar = async () => {
+    const user = auth.currentUser
+    if (!user) return
+    const q = query(collection(db, 'cofre'), where('uid', '==', user.uid))
+    const snap = await getDocs(q)
+    senhasCache = snap.docs.map(d => ({ id: d.id,...d.data() }))
+    renderizarLista()
+  }
+
+  function renderizarLista() {
+    const termo = document.getElementById('busca')?.value.toLowerCase() || ''
+    let filtradas = senhasCache.filter(s =>
+      s.site.toLowerCase().includes(termo) || s.email.toLowerCase().includes(termo)
+    )
+    if (categoriaAtiva === 'favoritos') {
+      filtradas = filtradas.filter(s => s.favorito)
+    } else if (categoriaAtiva!== 'todos') {
+      filtradas = filtradas.filter(s => s.categoria === categoriaAtiva)
+    }
+    const lista = document.getElementById('lista')
+    if (filtradas.length === 0) {
+      lista.innerHTML = '<p class="text-center text-slate-500 py-12">Nenhuma senha aqui ainda</p>'
+      return
+    }
+    lista.innerHTML = filtradas.map(item => {
+      const data = item.criadoEm? new Date(item.criadoEm).toLocaleDateString('pt-BR') : 'Hoje'
+      const dominio = item.site.toLowerCase().replace(/https?:\/\//, '').split('/')[0]
+      const icone = item.categoria === 'Banco'? '' : item.categoria === 'Social'? '' : item.categoria === 'Trabalho'? '' : item.categoria === 'Jogos'? '' : ''
+      return `
+      <div class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800/40 active:bg-slate-700/40 transition">
+          <img src="https://logo.clearbit.com/${dominio}" onerror="this.outerHTML='<div class=\\'w-12 h-12 rounded-full bg-slate-700 flex items-center justify-center text-xl shrink-0\\'>${item.favorito? '' : icone}</div>'" class="w-12 h-12 rounded-full bg-white p-1 shrink-0">
+          <div class="flex-1 min-w-0" onclick="abrirDetalhes('${item.id}')">
+              <div class="flex justify-between items-start">
+                  <p class="font-semibold truncate">${item.site}</p>
+                  <span class="text-xs text-slate-500 ml-2 shrink-0">${data}</span>
+              </div>
+              <p class="text-sm text-slate-400 truncate">${item.email}</p>
+              <div class="flex gap-2 mt-2">
+                  <button onclick="event.stopPropagation(); abrirDetalhes('${item.id}')" class="bg-slate-700 hover:bg-slate-600 px-3 py-2 rounded-lg text-sm">Ver</button>
+                  <button onclick="event.stopPropagation(); copiar('${item.id}', 'senha')" class="bg-blue-700 hover:bg-blue-600 px-3 py-2 rounded-lg text-sm">Usar</button>
+                  <button onclick="event.stopPropagation(); editarSenha('${item.id}')" class="bg-yellow-700 hover:bg-yellow-600 px-3 py-2 rounded-lg text-sm">Editar</button>
+                  <button onclick="event.stopPropagation(); confirmarDeletar('${item.id}')"
+                                    <button onclick="event.stopPropagation(); confirmarDeletar('${item.id}')" class="bg-red-700 hover:bg-red-600 px-3 py-2 rounded-lg text-sm">Del</button>
+              </div>
+          </div>
+          <button onclick="toggleFav('${item.id}')" class="text-xl shrink-0">${item.favorito? '' : ''}</button>
+      </div>`
+    }).join('')
+  }
+
+  window.toggleFav = async (id) => {
+    const item = senhasCache.find(s => s.id === id)
+    const novoFav =!item.favorito
+    await setDoc(doc(db, 'cofre', id), {...item, favorito: novoFav })
+    item.favorito = novoFav
+    renderizarLista()
+  }
+
+  window.copiar = (id, tipo) => {
+    const item = senhasCache.find(s => s.id === id)
+    const texto = tipo === 'senha'? item.senha : item.email
+    navigator.clipboard.writeText(texto)
+    const btn = event.target
+    const original = btn.textContent
+    btn.textContent = ''
+    setTimeout(() => btn.textContent = original, 1000)
+  }
+
+  window.filtrarCat = (cat) => {
+    categoriaAtiva = cat
+    document.querySelectorAll('.cat-btn').forEach(btn => {
+      btn.classList.remove('bg-blue-600')
+      btn.classList.add('bg-slate-700')
+    })
+    event.target.classList.add('bg-blue-600')
+    event.target.classList.remove('bg-slate-700')
+    renderizarLista()
+  }
+
+  window.gerarSenha = () => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*'
+    let senha = ''
+    for (let i = 0; i < 16; i++) {
+      senha += chars.charAt(Math.floor(Math.random() * chars.length))
+    }
+    document.getElementById('senha').value = senha
+    document.getElementById('senha').type = 'text'
+    medirForca()
+  }
+
+  window.medirForca = () => {
+    const senha = document.getElementById('senha').value
+    const bar = document.getElementById('forcaBar')
+    let forca = 0
+    if (senha.length >= 8) forca += 25
+    if (senha.length >= 12) forca += 25
+    if (/[a-z]/.test(senha) && /[A-Z]/.test(senha)) forca += 25
+    if (/[0-9]/.test(senha) && /[^a-zA-Z0-9]/.test(senha)) forca += 25
+    bar.style.width = forca + '%'
+    bar.className = 'h-full rounded-full transition-all ' + (forca < 50? 'forca-fraca' : forca < 75? 'forca-media' : 'forca-forte')
+  }
+
+  window.mostrarSenha = () => {
+    const input = document.getElementById('senha')
+    input.type = input.type === 'password'? 'text' : 'password'
+  }
+
+  window.abrirSidebar = () => {
+    document.getElementById('sidebar').classList.add('open')
+    document.getElementById('overlay').classList.remove('hidden')
+  }
+
+  window.fecharSidebar = () => {
+    document.getElementById('sidebar').classList.remove('open')
+    document.getElementById('overlay').classList.add('hidden')
+  }
+
+  window.instalarPWA = () => {
+    alert('No Chrome: Menu  > Instalar app\nNo Safari: Compartilhar > Adicionar à Tela de Início')
+    fecharSidebar()
+  }
+</script>
+</body>
+</html>
