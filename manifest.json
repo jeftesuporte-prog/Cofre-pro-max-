@@ -1,5 +1,6 @@
 {
   "name": "Cofre Pro Max",
+  "id": "./index.html",
   "short_name": "Cofre Pro",
   "description": "Cofre digital seguro com criptografia para guardar senhas, fotos e arquivos importantes. Proteção máxima para seus dados.",
   "start_url": "./index.html",
