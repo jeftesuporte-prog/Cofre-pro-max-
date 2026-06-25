@@ -1,7 +1,7 @@
 {
   "name": "Cofre Pro Max",
   "short_name": "Cofre Pro",
-  "description": "Cofre digital seguro com criptografia para guardar senhas, fotos e arquivos importantes. Proteção máxima para seus dados.",
+  "description": "Cofre digital seguro com criptografia para guardar senhas, fotos e arquivos importantes.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
@@ -29,34 +29,14 @@
       "sizes": "1080x1920",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Tela principal do Cofre Pro"
+      "label": "Tela principal"
     },
     {
       "src": "screenshot2.png",
       "sizes": "1080x1920",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Tela de senha do Cofre Pro"
+      "label": "Tela de senha"
     }
-  ],
-  "file_handlers": [
-    {
-      "action": "./",
-      "accept": {
-        "text/plain": [".txt"]
-      }
-    }
-  ],
-  "protocol_handlers": [
-    {
-      "protocol": "web+cofre",
-      "url": "./?link=%s"
-    }
-  ],
-  "related_applications": [],
-  "widgets": [],
-  "edge_side_panel": {
-    "preferred_width": 400
-  },
-  "scope_extensions": []
+  ]
 }
