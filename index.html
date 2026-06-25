@@ -22,23 +22,31 @@
       --border: rgba(255, 255, 255, 0.1);
     }
     body { background: var(--bg-gradient); min-height: 100vh; }
- .glass { background: var(--glass); backdrop-filter: blur(10px); border: 1px solid var(--border); }
- .forca-fraca { background: #ef4444; }
- .forca-media { background: #f59e0b; }
- .forca-forte { background: #22c55e; }
- .sidebar { transform: translateX(100%); transition: transform 0.3s ease; }
- .sidebar.open { transform: translateX(0); }
- .modal { animation: fadeIn 0.2s ease; }
+.glass { background: var(--glass); backdrop-filter: blur(10px); border: 1px solid var(--border); }
+.forca-fraca { background: #ef4444; }
+.forca-media { background: #f59e0b; }
+.forca-forte { background: #22c55e; }
+.sidebar { transform: translateX(100%); transition: transform 0.3s ease; }
+.sidebar.open { transform: translateX(0); }
+.modal { animation: fadeIn 0.2s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
- .cat-btn { padding: 0.5rem 1rem!important; font-size: 0.875rem!important; }
+.cat-btn { padding: 0.5rem 1rem!important; font-size: 0.875rem!important; }
     /* CSS do Zoom da Galeria */
     #modalZoom { touch-action: none; }
     #imgZoom { transform-origin: center center; transition: transform 0.1s; }
     #galeria img { touch-action: manipulation; }
   </style>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js');
+      });
+    }
+  </script>
 </head>
 <body class="text-white">
-    <!-- Modal de ConfirmaÁ„o -->
+    <!-- Modal de Confirma√ß√£o -->
     <div id="modalConfirm" class="hidden fixed inset-0 z-[999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="modal glass p-6 rounded-2xl w-full max-w-xs shadow-2xl">
             <div class="text-center mb-4">
@@ -55,7 +63,7 @@
 
     <!-- TEU APP COMPLETO VEM AQUI -->
     <div id="app">
-      <!-- Coloca todo resto do teu cÛdigo aqui -->
+      <!-- Coloca todo resto do teu c√≥digo aqui -->
     </div>
 
     <!-- Modal Editar Nome -->
@@ -101,7 +109,7 @@
                 <button onclick="mostrarSenhaCadastro()" class="absolute right-3 top-3.5 text-slate-400 hover:text-white"></button>
             </div>
             <div class="h-1 rounded-full bg-slate-700 mb-3"><div id="forcaBarCadastro" class="h-full rounded-full transition-all" style="width:0%"></div></div>
-            <p class="text-xs text-slate-400 mb-3">Use 8+ caracteres, mai˙sculas, n˙meros e sÌmbolos</p>
+            <p class="text-xs text-slate-400 mb-3">Use 8+ caracteres, mai√∫sculas, n√∫meros e s√≠mbolos</p>
             <button onclick="criarConta()" class="w-full bg-green-600 hover:bg-green-700 p-3 rounded-lg font-bold transition mb-2">Cadastrar</button>
             <button onclick="voltarLogin()" class="w-full bg-slate-700 hover:bg-slate-600 p-3 rounded-lg font-bold transition">Voltar</button>
         </div>
@@ -114,7 +122,7 @@
     <div id="telaBloqueio" class="hidden min-h-screen flex items-center justify-center p-4 fixed inset-0 z-50 bg-slate-900/95 backdrop-blur-md">
         <div class="glass p-8 rounded-2xl w-full max-w-sm shadow-2xl text-center">
             <div class="text-5xl mb-4"></div>
-            <h1 class="text-2xl font-bold mb-2">Ol·, <span id="nomeUsuarioBloq"></span></h1>
+            <h1 class="text-2xl font-bold mb-2">Ol√°, <span id="nomeUsuarioBloq"></span></h1>
             <p class="text-slate-400 text-sm mb-6">Insira sua senha para continuar</p>
             <input id="senhaDesbloqueio" type="password" placeholder="Sua senha" class="w-full p-3 mb-4 rounded-lg bg-slate-800/50 border border-slate-700 focus:border-blue-500 focus:outline-none text-center">
             <button onclick="desbloquear()" class="w-full bg-blue-600 hover:bg-blue-700 p-3 rounded-lg font-bold transition mb-2">Desbloquear</button>
@@ -129,7 +137,7 @@
         <div class="p-5">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-xl font-bold flex items-center gap-2"> Config</h2>
-                <button onclick="fecharSidebar()" class="text-2xl hover:text-slate-400">◊</button>
+                <button onclick="fecharSidebar()" class="text-2xl hover:text-slate-400">√ó</button>
             </div>
             <div class="space-y-3">
                 <div class="text-xs text-slate-400 font-semibold uppercase">Conta</div>
@@ -200,8 +208,8 @@
     <div id="app" class="hidden pb-20">
         <div class="max-w-md mx-auto">
             <div class="relative pt-3 px-4">
-                <h2 class="text-base font-semibold text-slate-300">Ol·, <span id="nomeUsuarioTopo"></span> </h2>
-                <button id="btnConfig" onclick="abrirSidebar()" style="position:absolute;top:12px;right:16px;width:44px;height:44px;background:#3b82f6;border:none;border-radius:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(59,130,246,0.4);z-index:30;" title="ConfiguraÁıes">
+                <h2 class="text-base font-semibold text-slate-300">Ol√°, <span id="nomeUsuarioTopo"></span> </h2>
+                <button id="btnConfig" onclick="abrirSidebar()" style="position:absolute;top:12px;right:16px;width:44px;height:44px;background:#3b82f6;border:none;border-radius:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(59,130,246,0.4);z-index:30;" title="Configura√ß√µes">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0.73 2.73l.15.08a2 2 0 0 1 1 1.73v.49a2 2 0 0 1-1 1.73l-.15.08a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.73v-.49a2 2 0 0 1 1-1.73l.15-.08a2 2 0 0 0.73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
                         <circle cx="12" cy="12" r="3"></circle>
@@ -239,10 +247,10 @@
         <div class="modal glass p-5 rounded-t-3xl sm:rounded-2xl w-full sm:max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="font-bold text-lg" id="tituloModalAdd">Nova Senha</h2>
-                <button onclick="fecharModalAdd()" class="text-2xl hover:text-slate-400">◊</button>
+                <button onclick="fecharModalAdd()" class="text-2xl hover:text-slate-400">√ó</button>
             </div>
             <input id="site" placeholder="Site: ex Instagram" class="w-full p-3 mb-3 rounded-lg bg-slate-800/50 border border-slate-700 focus:border-blue-500 focus:outline-none">
-            <input id="emailSite" placeholder="Email ou usu·rio" class="w-full p-3 mb-3 rounded-lg bg-slate-800/50 border border-slate-700 focus:border-blue-500 focus:outline-none">
+            <input id="emailSite" placeholder="Email ou usu√°rio" class="w-full p-3 mb-3 rounded-lg bg-slate-800/50 border border-slate-700 focus:border-blue-500 focus:outline-none">
             <select id="categoria" class="w-full p-3 mb-3 rounded-lg bg-slate-800/50 border border-slate-700 focus:border-blue-500 focus:outline-none">
                 <option value="Geral">Categoria: Geral</option>
                 <option value="Banco">Banco</option>
@@ -268,7 +276,7 @@
         <div class="modal glass p-5 rounded-t-3xl sm:rounded-2xl w-full sm:max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-5">
                 <h2 class="font-bold text-xl" id="verTitulo">Detalhes</h2>
-                <button onclick="fecharModalVer()" class="text-3xl hover:text-slate-400">◊</button>
+                <button onclick="fecharModalVer()" class="text-3xl hover:text-slate-400">√ó</button>
             </div>
             <div class="flex items-center gap-4 mb-6 p-3 bg-slate-800/40 rounded-xl">
                 <div id="verIcone" class="w-16 h-16 rounded-xl bg-slate-700 flex items-center justify-center text-3xl"></div>
@@ -279,7 +287,7 @@
             </div>
             <div class="space-y-4">
                 <div class="p-3 bg-slate-800/40 rounded-xl">
-                    <p class="text-xs text-slate-500 mb-1">EMAIL / USU¡RIO</p>
+                    <p class="text-xs text-slate-500 mb-1">EMAIL / USU√ÅRIO</p>
                     <div class="flex justify-between items-center">
                         <p class="text-base font-mono break-all" id="verEmail"></p>
                         <button onclick="copiarTexto('verEmail')" class="bg-blue-700 hover:bg-blue-600 px-3 py-1.5 rounded-lg text-sm ml-2">Copiar</button>
@@ -288,7 +296,7 @@
                 <div class="p-3 bg-slate-800/40 rounded-xl">
                     <p class="text-xs text-slate-500 mb-1">SENHA</p>
                     <div class="flex justify-between items-center">
-                        <p class="text-base font-mono break-all" id="verSenha">ïïïïïïïï</p>
+                        <p class="text-base font-mono break-all" id="verSenha">¬ï¬ï¬ï¬ï¬ï¬ï¬ï¬ï</p>
                         <div class="flex gap-2 ml-2">
                             <button onclick="toggleVerSenha()" class="bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-lg text-sm"></button>
                             <button onclick="copiarTexto('verSenha', true)" class="bg-green-700 hover:bg-green-600 px-3 py-1.5 rounded-lg text-sm">Copiar</button>
@@ -314,12 +322,12 @@
 <div id="modalFotoTela" class="hidden fixed inset-0 z-[80] bg-black touch-pan-y">
     <div class="relative w-full h-full flex items-center justify-center">
 
-        <!-- Bot„o Baixar Direto -->
+        <!-- Bot√£o Baixar Direto -->
         <button onclick="baixarFotoAtual(event)" class="absolute top-4 left-4 z-10 bg-black/60 hover:bg-black/80 text-white p-3 rounded-full">
             <img src="https://i.ibb.co/hMbFsgqd/baixar.png" class="w-6 h-6" alt="Download">
         </button>
 
-        <!-- Bot„o Fechar -->
+        <!-- Bot√£o Fechar -->
         <button onclick="fecharFotoTela()" class="absolute top-4 right-4 z-10 bg-slate-700 hover:bg-slate-600 text-white p-3 rounded-full">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -329,7 +337,7 @@
         <!-- Foto com zoom -->
         <img id="fotoTelaGrande" src="" class="max-w-full max-h-full object-contain" style="touch-action: pan-x pan-y pinch-zoom;">
 
-        <!-- Bot„o Deletar embaixo -->
+        <!-- Bot√£o Deletar embaixo -->
         <button onclick="deletarFotoTela()" class="absolute bottom-6 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-full flex items-center gap-2">
             <span></span>
             <span>Deletar Foto</span>
@@ -338,7 +346,7 @@
     </div>
 </div>
 
-<!-- Parte 2 vem no prÛximo passo - o SCRIPT -->
+<!-- Parte 2 vem no pr√≥ximo passo - o SCRIPT -->
 </body>
 </html>
 <script type="module">
@@ -390,7 +398,7 @@ window.initGaleriaLazy = function() {
   document.querySelectorAll('#galeria img[data-src]').forEach(img => observer.observe(img));
 }
 
-// 3. ABRIR GALERIA - PEGA S” OS SRC, N√O CARREGA NADA
+// 3. ABRIR GALERIA - PEGA S√ì OS SRC, N√ÉO CARREGA NADA
 document.getElementById('galeria')?.addEventListener('click', (e) => {
   const img = e.target.closest('img');
   if (!img) return;
@@ -400,7 +408,7 @@ document.getElementById('galeria')?.addEventListener('click', (e) => {
   const urlOriginal = img.dataset.full || img.src || img.dataset.src;
   if (!urlOriginal) return;
 
-  // Monta array sÛ com URLs, n„o com elementos
+  // Monta array s√≥ com URLs, n√£o com elementos
   G.fotos = Array.from(document.querySelectorAll('#galeria img'))
   .map(i => i.dataset.full || i.src || i.dataset.src)
   .filter(Boolean);
@@ -423,7 +431,7 @@ function abrirModal() {
     <div id="contadorZoom" style="position:absolute;top:16px;left:50%;transform:translateX(-50%);color:#fff;font-size:12px;background:rgba(0,0,0,.6);padding:6px 12px;border-radius:20px;z-index:2">
       ${G.i + 1} / ${G.fotos.length}
     </div>
-    <button id="btnFechar" style="position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.6);border:none;color:#fff;font-size:22px;z-index:2;touch-action:manipulation">◊</button>
+    <button id="btnFechar" style="position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.6);border:none;color:#fff;font-size:22px;z-index:2;touch-action:manipulation">√ó</button>
     <div id="zoomBox" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;touch-action:none">
       <img id="zoomImg" src="${G.fotos[G.i]}" style="max-width:100%;max-height:100%;object-fit:contain;transform:translate(0,0) scale(1);user-select:none;-webkit-user-drag:none">
     </div>
@@ -435,7 +443,7 @@ function abrirModal() {
   preload();
 }
 
-// 4. PRELOAD S” 1 ANTES E 1 DEPOIS
+// 4. PRELOAD S√ì 1 ANTES E 1 DEPOIS
 function preload() {
   const t = G.fotos.length;
   if (t <= 1) return;
@@ -557,7 +565,7 @@ function initZoom() {
 }
 // ========== FIM GALERIA ==========
 
-// FUN«√O PRA SALVAR FOTO NA GALERIA
+// FUN√á√ÉO PRA SALVAR FOTO NA GALERIA
 window.salvarFotoNaGaleria = (base64) => {
   if(window.Android && window.Android.salvarNaGaleria) {
     window.Android.salvarNaGaleria(base64)
@@ -595,8 +603,8 @@ window.salvarFotoNaGaleria = (base64) => {
     } catch (e) {
       msg.classList.add('text-red-400')
       msg.classList.remove('text-green-400')
-      if (e.code === 'auth/user-not-found') msg.textContent = 'Email n„o cadastrado'
-      else if (e.code === 'auth/invalid-email') msg.textContent = 'Email inv·lido'
+      if (e.code === 'auth/user-not-found') msg.textContent = 'Email n√£o cadastrado'
+      else if (e.code === 'auth/invalid-email') msg.textContent = 'Email inv√°lido'
       else msg.textContent = 'Erro: ' + e.message
     }
   }
@@ -645,7 +653,7 @@ window.salvarFotoNaGaleria = (base64) => {
       return
     }
     if (novoNome === auth.currentUser.displayName) {
-      msg.textContent = 'Esse j· È seu nome atual'
+      msg.textContent = 'Esse j√° √© seu nome atual'
       return
     }
     try {
@@ -789,7 +797,7 @@ window.salvarFotoNaGaleria = (base64) => {
              ontouchstart="startLongPress('${foto.id}', '${foto.url}', '${foto.public_id}')"
              ontouchend="endLongPress()"
              ontouchmove="endLongPress()">
-        <button onclick="event.stopPropagation(); confirmarDeletarFoto('${foto.id}', '${foto.public_id}')" class="absolute top-1 right-1 bg-red-600 text-white rounded-full w-6 h-6 text-xs opacity-0 group-hover:opacity-100 transition">◊</button>
+        <button onclick="event.stopPropagation(); confirmarDeletarFoto('${foto.id}', '${foto.public_id}')" class="absolute top-1 right-1 bg-red-600 text-white rounded-full w-6 h-6 text-xs opacity-0 group-hover:opacity-100 transition">√ó</button>
       </div>
     `).join('')
   }
@@ -806,7 +814,7 @@ window.salvarFotoNaGaleria = (base64) => {
   }
 
   window.menuFoto = (id, url, public_id) => {
-    mostrarModal('OpÁıes da Foto', 'O que vocÍ quer fazer?', '', 'bg-blue-600', null)
+    mostrarModal('Op√ß√µes da Foto', 'O que voc√™ quer fazer?', '', 'bg-blue-600', null)
     const modal = document.querySelector('#modalConfirm.grid')
     modal.innerHTML = `
       <button onclick="salvarFotoPorUrl('${url}', 'foto_${Date.now()}.jpg'); fecharModal()" class="bg-blue-600 hover:bg-blue-700 p-3 rounded-lg font-bold transition"> Salvar</button>
@@ -958,7 +966,7 @@ window.salvarFotoNaGaleria = (base64) => {
           throw new Error(data.error?.message || 'Upload falhou')
         }
       } catch (error) {
-        mostrarModal('Erro', `N„o subiu: ${file.name}`, '', 'bg-red-600', null)
+        mostrarModal('Erro', `N√£o subiu: ${file.name}`, '', 'bg-red-600', null)
         console.error(error)
       }
     }
@@ -980,7 +988,7 @@ window.salvarFotoNaGaleria = (base64) => {
       mostrarModal('Apagada!', 'Foto removida da galeria', '', 'bg-green-600', null)
     } catch (e) {
       console.error('Erro ao deletar:', e)
-      mostrarModal('Erro!', 'N„o deu pra apagar a foto', '', 'bg-red-600', null)
+      mostrarModal('Erro!', 'N√£o deu pra apagar a foto', '', 'bg-red-600', null)
     }
   }
 
@@ -1025,7 +1033,7 @@ window.salvarFotoNaGaleria = (base64) => {
     document.getElementById('verSite').textContent = item.site
     document.getElementById('verCategoria').textContent = item.categoria
     document.getElementById('verEmail').textContent = item.email
-    document.getElementById('verSenha').textContent = 'ïïïïïïïï'
+    document.getElementById('verSenha').textContent = '¬ï¬ï¬ï¬ï¬ï¬ï¬ï¬ï'
     document.getElementById('verData').textContent = item.criadoEm? new Date(item.criadoEm).toLocaleDateString('pt-BR', {day: '2-digit', month: 'long', year: 'numeric'}) : 'Hoje'
     if (item.nota) {
       document.getElementById('verNotaBox').classList.remove('hidden')
@@ -1044,13 +1052,13 @@ window.salvarFotoNaGaleria = (base64) => {
 
   window.toggleVerSenha = () => {
     const el = document.getElementById('verSenha')
-    el.textContent = el.textContent === 'ïïïïïïïï'? senhaAtualVer : 'ïïïïïïïï'
+    el.textContent = el.textContent === '¬ï¬ï¬ï¬ï¬ï¬ï¬ï¬ï'? senhaAtualVer : '¬ï¬ï¬ï¬ï¬ï¬ï¬ï¬ï'
   }
 
   window.copiarTexto = (id, ehSenha = false) => {
     const texto = ehSenha? senhaAtualVer : document.getElementById(id).textContent
     navigator.clipboard.writeText(texto)
-    mostrarModal('Copiado!', 'Texto copiado pra ·rea de transferÍncia', '', 'bg-green-600', null)
+    mostrarModal('Copiado!', 'Texto copiado pra √°rea de transfer√™ncia', '', 'bg-green-600', null)
   }
 
   window.editarDaqui = () => {
@@ -1068,7 +1076,7 @@ window.salvarFotoNaGaleria = (base64) => {
   window.salvar = async () => {
     const user = auth.currentUser
     if (!user) {
-      alert('Usu·rio n„o logado!')
+      alert('Usu√°rio n√£o logado!')
       return
     }
     const site = document.getElementById('site').value.trim()
@@ -1241,8 +1249,8 @@ window.salvarFotoNaGaleria = (base64) => {
 
     if (user) {
       document.getElementById('telaLogin').classList.add('hidden')
-      document.getElementById('nomeUsuarioBloq').textContent = user.displayName || 'Usu·rio'
-      document.getElementById('nomeUsuarioTopo').textContent = user.displayName || 'Usu·rio'
+      document.getElementById('nomeUsuarioBloq').textContent = user.displayName || 'Usu√°rio'
+      document.getElementById('nomeUsuarioTopo').textContent = user.displayName || 'Usu√°rio'
       document.getElementById('userEmailSide').textContent = user.email
 
       document.getElementById('telaBloqueio').classList.remove('hidden')
@@ -1377,7 +1385,7 @@ window.salvarFotoNaGaleria = (base64) => {
   }
 
   window.instalarPWA = () => {
-    alert('No Chrome: Menu  > Instalar app\nNo Safari: Compartilhar > Adicionar ‡ Tela de InÌcio')
+    alert('No Chrome: Menu  > Instalar app\nNo Safari: Compartilhar > Adicionar √† Tela de In√≠cio')
     fecharSidebar()
   }
 </script>
