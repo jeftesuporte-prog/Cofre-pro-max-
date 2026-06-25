@@ -1,18 +1,14 @@
 {
   "name": "Cofre Pro Max",
   "short_name": "Cofre Pro",
-  "id": "./index.html",
   "description": "Cofre digital seguro com criptografia para guardar senhas, fotos e arquivos importantes. Proteção máxima para seus dados.",
-  "start_url": "./index.html",
-  "scope": ".",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#00E5FF",
   "orientation": "portrait",
-  "dir": "ltr",
   "lang": "pt-BR",
-  "categories": ["productivity", "utilities", "security"],
-  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b9",
   "icons": [
     {
       "src": "icon-192.png",
@@ -33,45 +29,14 @@
       "sizes": "1080x1920",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Tela inicial do Cofre Pro Max"
+      "label": "Tela principal do Cofre Pro"
     },
     {
       "src": "screenshot2.png",
       "sizes": "1080x1920",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Cofre desbloqueado"
+      "label": "Tela de senha do Cofre Pro"
     }
-  ],
-  "shortcuts": [
-    {
-      "name": "Adicionar senha",
-      "short_name": "Nova senha",
-      "description": "Adiciona uma nova senha ao cofre",
-      "url": "./index.html?action=new",
-      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
-    }
-  ],
-  "file_handlers": [],
-  "launch_handler": {
-    "client_mode": "focus-existing"
-  },
-  "protocol_handlers": [],
-  "prefer_related_applications": false,
-  "related_applications": [],
-  "share_target": {
-    "action": "./index.html",
-    "method": "GET",
-    "params": {
-      "title": "title",
-      "text": "text",
-      "url": "url"
-    }
-  },
-  "widgets": [],
-  "display_override": ["window-controls-overlay"],
-  "note_taking": {
-    "new_note_url": "./index.html?action=new"
-  },
-  "scope_extensions": []
+  ]
 }
