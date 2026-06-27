@@ -10,6 +10,7 @@
   "theme_color": "#00E5FF",
   "orientation": "portrait",
   "lang": "pt-BR",
+  "dir": "ltr",
   "categories": ["security", "utilities", "productivity"],
   "icons": [
     {
@@ -45,26 +46,44 @@
     {
       "name": "Gerar Senha Forte",
       "short_name": "Gerar",
-      "description": "Gera uma senha forte na hora",
       "url": "/Cofre-pro-max/?action=gerar",
-      "icons": [
-        {
-          "src": "/Cofre-pro-max/icon-192.png",
-          "sizes": "192x192"
-        }
-      ]
+      "icons": [{"src": "/Cofre-pro-max/icon-192.png", "sizes": "192x192"}]
     },
     {
       "name": "Abrir Cofre",
-      "short_name": "Abrir",
-      "description": "Vai direto pra tela de senha",
+      "short_name": "Abrir", 
       "url": "/Cofre-pro-max/?action=abrir",
-      "icons": [
-        {
-          "src": "/Cofre-pro-max/icon-192.png",
-          "sizes": "192x192"
-        }
-      ]
+      "icons": [{"src": "/Cofre-pro-max/icon-192.png", "sizes": "192x192"}]
     }
-  ]
+  ],
+  "file_handlers": [
+    {
+      "action": "/Cofre-pro-max/?action=import",
+      "accept": {
+        "application/json": [".cof"]
+      }
+    }
+  ],
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "web+cofre",
+      "url": "/Cofre-pro-max/?open=%s"
+    }
+  ],
+  "share_target": {
+    "action": "/Cofre-pro-max/?action=share",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "display_override": ["standalone", "window-controls-overlay"],
+  "edge_side_panel": {
+    "preferred_width": 400
+  }
 }
