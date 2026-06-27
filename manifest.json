@@ -6,12 +6,15 @@
   "start_url": "/Cofre-pro-max/",
   "scope": "/Cofre-pro-max/",
   "display": "standalone",
+  "display_override": ["standalone", "window-controls-overlay", "minimal-ui"],
   "background_color": "#000",
   "theme_color": "#00E5FF",
   "orientation": "portrait",
   "lang": "pt-BR",
   "dir": "ltr",
   "categories": ["security", "utilities", "productivity"],
+  "iarc_rating_id": "e84b072f-a4b8-4d2c-99f1-9a6e8a1b7c4d",
+  "note_taking": true,
   "icons": [
     {
       "src": "/Cofre-pro-max/icon-192.png",
@@ -37,7 +40,7 @@
     {
       "src": "/Cofre-pro-max/screenshot2.png",
       "sizes": "1080x1920",
-      "type": "image/png",
+      "type": "image/png", 
       "form_factor": "narrow",
       "label": "Tela de senha do Cofre Pro"
     }
@@ -59,31 +62,33 @@
   "file_handlers": [
     {
       "action": "/Cofre-pro-max/?action=import",
-      "accept": {
-        "application/json": [".cof"]
-      }
+      "accept": {"application/json": [".cof", ".json"]}
     }
   ],
-  "launch_handler": {
-    "client_mode": "navigate-existing"
-  },
+  "launch_handler": {"client_mode": "navigate-existing"},
   "protocol_handlers": [
-    {
-      "protocol": "web+cofre",
-      "url": "/Cofre-pro-max/?open=%s"
-    }
+    {"protocol": "web+cofre", "url": "/Cofre-pro-max/?open=%s"}
   ],
+  "prefer_related_applications": false,
+  "related_applications": [],
   "share_target": {
     "action": "/Cofre-pro-max/?action=share",
     "method": "GET",
-    "params": {
-      "title": "title",
-      "text": "text",
-      "url": "url"
-    }
+    "enctype": "application/x-www-form-urlencoded",
+    "params": {"title": "title", "text": "text", "url": "url"}
   },
-  "display_override": ["standalone", "window-controls-overlay"],
-  "edge_side_panel": {
-    "preferred_width": 400
-  }
+  "widgets": [
+    {
+      "name": "Cofre Rápido",
+      "description": "Acesso rápido ao cofre",
+      "tag": "cofre-widget",
+      "template": "/Cofre-pro-max/widget.html",
+      "ms_ac_template": "/Cofre-pro-max/widget.html",
+      "sizes": [{"width": 300, "height": 150}]
+    }
+  ],
+  "edge_side_panel": {"preferred_width": 400},
+  "scope_extensions": [
+    {"origin": "*.github.io", "scope_regex": "/Cofre-pro-max/.*"}
+  ]
 }
