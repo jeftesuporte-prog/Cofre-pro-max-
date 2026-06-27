@@ -1,4 +1,5 @@
 {
+  "id": "/Cofre-pro-max/",
   "name": "Cofre Pro Max",
   "short_name": "Cofre Pro",
   "description": "Cofre digital seguro com criptografia para guardar senhas, fotos e arquivos importantes. Proteção máxima para seus dados.",
@@ -42,11 +43,28 @@
   ],
   "shortcuts": [
     {
-      "name": "Gerar Senha",
+      "name": "Gerar Senha Forte",
       "short_name": "Gerar",
       "description": "Gera uma senha forte na hora",
       "url": "/Cofre-pro-max/?action=gerar",
-      "icons": [{ "src": "/Cofre-pro-max/icon-192.png", "sizes": "192x192" }]
+      "icons": [
+        {
+          "src": "/Cofre-pro-max/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Abrir Cofre",
+      "short_name": "Abrir",
+      "description": "Vai direto pra tela de senha",
+      "url": "/Cofre-pro-max/?action=abrir",
+      "icons": [
+        {
+          "src": "/Cofre-pro-max/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
     }
   ]
 }
